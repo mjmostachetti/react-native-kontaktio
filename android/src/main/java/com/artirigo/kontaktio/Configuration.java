@@ -142,6 +142,8 @@ class Configuration {
                     .deviceUpdateCallbackInterval(deviceUpdateCallbackInterval)
                     .monitoringEnabled(monitoringEnabled)
                     .monitoringSyncInterval(monitoringSyncInterval);
+                    //.kontaktScanFilters(KontaktScanFilter.DEFAULT_FILTERS_LIST);
+
             // other values not used in current version
 //            .rssiCalculator(RssiCalculators.DEFAULT)
 //            .cacheFileName("Example")

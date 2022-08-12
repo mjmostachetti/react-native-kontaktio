@@ -6,7 +6,6 @@ import {
   DeviceEventEmitter,
   ScrollView,
   TouchableOpacity,
-  PermissionsAndroid
 } from 'react-native';
 import Kontakt from 'react-native-kontaktio';
 import type { ColorValue } from 'react-native';
@@ -87,46 +86,24 @@ export default class IBeaconExample extends Component<{}, State> {
     statusText: null,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     // Initialization, configuration and adding of beacon regions
     const config: ConfigType = {
       scanMode: scanMode.BALANCED,
-      scanPeriod: scanPeriod.RANGING,
+      scanPeriod: scanPeriod.create({
+        activePeriod: 6000,
+        passivePeriod: 20000,
+      }),
       activityCheckConfiguration: activityCheckConfiguration.DEFAULT,
-      forceScanConfiguration: forceScanConfiguration.DISABLED,
+      forceScanConfiguration: forceScanConfiguration.MINIMAL,
       monitoringEnabled: monitoringEnabled.TRUE,
       monitoringSyncInterval: monitoringSyncInterval.DEFAULT,
     };
 
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Location Permission',
-        message:
-          'This example app needs to access your location in order to use bluetooth beacons.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
-
-    const granted2 = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-    );
-
-    DeviceEventEmitter.addListener(
-      'beaconInitStatus',
-      ({ isReady }) => {
-        console.log(isReady);
-        console.log('redy');
-      }
-    );
-
-    connect()
-      //.then(() => configure(config))
-      //.then(() => setBeaconRegions([]))
-      //.then(() => setEddystoneNamespace(null))
+    connect('MY_KONTAKTIO_API_KEY', [IBEACON, EDDYSTONE])
+      .then(() => configure(config))
+      .then(() => setBeaconRegions([region1, region2]))
+      .then(() => setEddystoneNamespace(null))
       .catch((error) => console.log('error', error));
 
     // Beacon listeners
@@ -385,9 +362,9 @@ export default class IBeaconExample extends Component<{}, State> {
         </View>
         {this._renderStatusText()}
         <ScrollView>
-          {scanning && beacons.length
+          {/* {scanning && beacons.length
             ? this._renderBeacons()
-            : this._renderEmpty()}
+            : this._renderEmpty()} */}
         </ScrollView>
       </View>
     );
