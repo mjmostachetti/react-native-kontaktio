@@ -62,9 +62,8 @@ const {
 } = Kontakt;
 
 const region1: RegionType = {
-  identifier: 'Test beacons 1',
+  identifier: 'My-Region',
   uuid: '75b56cb8-04b0-438f-83d0-c15194766fce',
-  secureUuid: '75b56cb8-04b0-438f-83d0-c15194766fce'
   //major: 1,
   // no minor provided: will detect all minors
 };
@@ -119,13 +118,19 @@ const App = () => {
     (async () => {
       const config: ConfigType = {
         scanMode: scanMode.BALANCED,
-        scanPeriod: scanPeriod.RANGING,
+        scanPeriod: scanPeriod.create({
+          activePeriod: 6000,
+          passivePeriod: 20000,
+        }),
+        //scanPeriod: scanPeriod.RANGING,
         activityCheckConfiguration: activityCheckConfiguration.DEFAULT,
-        forceScanConfiguration: forceScanConfiguration.DISABLED,
+        forceScanConfiguration: forceScanConfiguration.create({
+          forceScanActivePeriod: 5000,
+          forceScanPassivePeriod: 5000,
+        }),
         monitoringEnabled: monitoringEnabled.TRUE,
         monitoringSyncInterval: monitoringSyncInterval.DEFAULT,
       };
-
 
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -144,26 +149,23 @@ const App = () => {
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
       );
 
-      DeviceEventEmitter.addListener(
-        'beaconInitStatus',
-        ({ isReady }) => {
-          console.log(isReady);
-          console.log('redy');
-        }
-      );
+      DeviceEventEmitter.addListener('beaconInitStatus', ({isReady}) => {
+        console.log(isReady);
+        console.log('redy');
+      });
 
-       // Region listeners
-    DeviceEventEmitter.addListener('regionDidEnter', ({ region }) => {
-      console.log('regionDidEnter', region);
-    });
-    DeviceEventEmitter.addListener('regionDidExit', ({ region }) => {
-      console.log('regionDidExit', region);
-    });
+      // Region listeners
+      DeviceEventEmitter.addListener('regionDidEnter', ({region}) => {
+        console.log('regionDidEnter', region);
+      });
+      DeviceEventEmitter.addListener('regionDidExit', ({region}) => {
+        console.log('regionDidExit', region);
+      });
 
-    // Beacon monitoring listener
-    DeviceEventEmitter.addListener('monitoringCycle', ({ status }) => {
-      console.log('monitoringCycle', status);
-    });
+      // Beacon monitoring listener
+      DeviceEventEmitter.addListener('monitoringCycle', ({status}) => {
+        console.log('monitoringCycle', status);
+      });
 
       DeviceEventEmitter.addListener(
         'beaconsDidUpdate',
@@ -175,26 +177,20 @@ const App = () => {
           region: RegionType;
         }) => {
           console.log('beaconsDidUpdate', updatedBeacons, region);
-        }
+        },
       );
 
       try {
         console.log('connecting');
         await connect();
-        await setBeaconRegions([region1]);
         await configure(config);
+        await setBeaconRegions([region1]);
         let regions = await getBeaconRegions();
         console.log(regions);
         await startScanning();
       } catch (e) {
         console.log('failed');
       }
-        //.then(() => configure(config))
-        //.then(() => setBeaconRegions([region1, region2]))
-        //.then(() => setEddystoneNamespace(null))
-
-      // Beacon listeners
-
     })();
   }, []);
 

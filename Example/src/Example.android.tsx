@@ -6,7 +6,8 @@ import {
   DeviceEventEmitter,
   ScrollView,
   TouchableOpacity,
-  PermissionsAndroid
+  PermissionsAndroid,
+  Platform
 } from 'react-native';
 import Kontakt from 'react-native-kontaktio';
 import type { ColorValue } from 'react-native';
@@ -98,22 +99,24 @@ export default class IBeaconExample extends Component<{}, State> {
       monitoringSyncInterval: monitoringSyncInterval.DEFAULT,
     };
 
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Location Permission',
-        message:
-          'This example app needs to access your location in order to use bluetooth beacons.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
+    let granted: string = PermissionsAndroid.RESULTS.DENIED;
 
-    const granted2 = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-    );
+    if (Platform.Version <= 30) {
+      granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "Location",
+          message: "Please",
+          buttonNeutral: "Later",
+          buttonNegative: "strings.cancel",
+          buttonPositive: "strings.ok",
+        },
+      );
+    } else if (Platform.Version > 30) {
+      // granted = await PermissionsAndroid.requestMultiple([
+      //   PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+      //   PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT]);
+    }
 
     DeviceEventEmitter.addListener(
       'beaconInitStatus',
