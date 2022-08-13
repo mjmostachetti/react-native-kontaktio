@@ -9,6 +9,7 @@ import com.kontakt.sdk.android.ble.configuration.ForceScanConfiguration;
 import com.kontakt.sdk.android.ble.configuration.ScanContext;
 import com.kontakt.sdk.android.ble.configuration.ScanMode;
 import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
+import com.kontakt.sdk.android.ble.configuration.KontaktScanFilter;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 
 /**
@@ -141,8 +142,8 @@ class Configuration {
                     .forceScanConfiguration(forceScanConfiguration)
                     .deviceUpdateCallbackInterval(deviceUpdateCallbackInterval)
                     .monitoringEnabled(monitoringEnabled)
-                    .monitoringSyncInterval(monitoringSyncInterval);
-                    //.kontaktScanFilters(KontaktScanFilter.DEFAULT_FILTERS_LIST);
+                    .monitoringSyncInterval(monitoringSyncInterval)
+                    .kontaktScanFilters(KontaktScanFilter.DEFAULT_FILTERS_LIST);
 
             // other values not used in current version
 //            .rssiCalculator(RssiCalculators.DEFAULT)
